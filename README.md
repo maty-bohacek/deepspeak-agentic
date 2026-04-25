@@ -1,8 +1,6 @@
 <img width="2911" height="822" alt="sample" src="https://github.com/user-attachments/assets/c029891a-f006-418d-bb35-d1d5b4205014" />
 <p align="center"><i>A representative example of a conversation between an AI agent (left) and human (right) in our dataset.</i></p>
 
-<br>
-
 # The *DeepSpeak-Agentic* Dataset
 
 #### [Sarah Barrington](https://www.sbarrington.com), [Maty Bohacek](https://www.matybohacek.com), and [Hany Farid](https://farid.berkeley.edu)
