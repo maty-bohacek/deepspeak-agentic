@@ -1,21 +1,19 @@
 <!-- Banner image goes here once available -->
 
-# The DeepSpeak-Agentic Dataset
+# The *DeepSpeak-Agentic* Dataset
 
-#### [Author One](https://example.com), [Author Two](https://example.com), [Author Three](https://example.com), [Author Four](https://example.com)
+#### [Sarah Barrington](https://www.sbarrington.com), [Maty Bohacek](https://www.matybohacek.com), and [Hany Farid](https://farid.berkeley.edu)
 
-This repository accompanies the paper *The DeepSpeak-Agentic Dataset* and contains (1) the code used to capture real-time, audio-visual conversations between human crowd workers and embodied AI agents, and (2) the code used to compute the dataset statistics, run the deepfake detection benchmarks, and reproduce all figures and tables in the paper.
+This repository accompanies the paper *The DeepSpeak-Agentic Dataset* and contains (1) the code used to capture real-time, audio-visual conversations between human crowd workers and embodied AI agents, and (2) the code used to compute the dataset statistics, run the deepfake detection benchmarks, and reproduce all figures and tables in the paper. The dataset we release contains 200 conversations totalling 37 hours, with isolated per-speaker streams, transcripts, and metadata.
 
-The dataset itself — 200 conversations totalling 37 hours, with isolated per-speaker streams, transcripts, and metadata — is hosted on HuggingFace: [`faridlab/deepspeak_agentic`](https://huggingface.co/datasets/faridlab/deepspeak_agentic).
-
-> [Website](https://example.com) — [Paper](https://example.com) — [Contact us](mailto:email@example.com)
+> [Paper]() — [Data](https://huggingface.co/datasets/faridlab/deepspeak_agentic) — [Contact us](mailto:maty@stanford.edu)
 >
 > *Pre-print. Under review.*
 
 ## Repository Layout
 
-- [`data_collection/`](./data_collection) — the video-streaming web app that pairs a Prolific worker with a fresh AI agent, records the call, and uploads it to S3.
-- [`experiments/`](./experiments) — the post-processing pipeline (diarization, speaker isolation, transcription) and the deepfake-detection / dataset-analysis benchmarks reported in the paper.
+- [`data_collection/`](./data_collection) <br> the video-streaming web app that pairs a Prolific worker with a fresh AI agent, records the call, and uploads it to S3
+- [`experiments/`](./experiments) <br> the post-processing pipeline (diarization, speaker isolation, transcription) and the deepfake-detection / dataset-analysis benchmarks reported in the paper
 
 ## Getting Started
 
