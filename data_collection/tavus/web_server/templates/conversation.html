@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tavus Conversation</title>
+    <script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #1a1a2e;
+        }
+        
+        .conversation-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .loading .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #2F80ED;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="conversation-container">
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Connecting to conversation...</div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Daily call frame
+        const call = window.Daily.createFrame({
+            showLeaveButton: true,
+            lang: "en",
+            showFullscreenButton: true,
+            iframeStyle: {
+                position: 'fixed',
+                top: '0',
+                left: '0',
+                width: '100%',
+                height: '100%',
+            },
+            theme: {
+                colors: {
+                    accent: "#2F80ED",
+                    background: "#1a1a2e",
+                    baseText: "#ffffff",
+                },
+            },
+        });
+        
+        // Hide loading indicator once call starts
+        call.on('joined-meeting', async () => {
+            document.getElementById('loading').style.display = 'none';
+            
+            // Automatically start recording
+            try {
+                console.log('Starting automatic recording...');
+                await call.startRecording();
+                console.log('Recording started successfully');
+            } catch (error) {
+                console.error('Failed to start recording:', error);
+            }
+        });
+        
+        // Handle errors
+        call.on('error', (error) => {
+            console.error('Call error:', error);
+            document.getElementById('loading').innerHTML = 
+                '<div style="color: #fc8181;">Error connecting. Please refresh the page.</div>';
+        });
+        
+        // Stop recording when call ends
+        call.on('left-meeting', async () => {
+            try {
+                console.log('Stopping recording...');
+                await call.stopRecording();
+                console.log('Recording stopped successfully');
+            } catch (error) {
+                console.error('Failed to stop recording:', error);
+            }
+        });
+        
+        // Join the conversation
+        call.join({ url: '{{ conversation_url }}' });
+        
+        // Handle page unload
+        window.addEventListener('beforeunload', async () => {
+            try {
+                await call.stopRecording();
+            } catch (error) {
+                // Ignore errors on unload
+            }
+            call.leave();
+        });
+    </script>
+</body>
+</html>
+

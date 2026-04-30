@@ -1,0 +1,10 @@
+Do not commit real Qualtrics exports to the public repo.
+
+1. In Qualtrics: export your survey as a .qsf file.
+2. Copy that .qsf into:
+   data_collection/output/1.5_survey_templates/inputs/
+
+Set QUALTRICS_TEMPLATE_BLOCK_ID in data_collection/config.yaml to your template block's "ID" from the QSF.
+
+Full requirements (URL placeholders, optional ID questions):
+  → see README.md in this folder.

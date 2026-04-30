@@ -1,0 +1,10 @@
+# Data collection only — do not merge with experiments/ or other repo requirements.
+# Install from repo root:  pip install -r data_collection/requirements.txt
+# Or from this folder:      pip install -r requirements.txt
+
+boto3>=1.34.0
+Flask>=3.0.0
+gunicorn>=22.0.0
+PyYAML>=6.0
+requests>=2.31.0
+Werkzeug>=3.0.0

@@ -1,0 +1,86 @@
+{
+  "heygen": {
+    "provider": "heygen",
+    "llms": [
+      "gpt-5.4-mini",
+      "gpt-4o-mini"
+    ],
+    "replicas": {
+      "female": {
+        "replica_ids": [
+          "PLACEHOLDER_AVATAR_FEMALE_1",
+          "PLACEHOLDER_AVATAR_FEMALE_2"
+        ],
+        "voice_providers": {
+          "elevenlabs": {
+            "vocal_identities": [
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_FEMALE_1",
+                "language": "english",
+                "elevenlabs_id": "PLACEHOLDER_ELEVENLABS_VOICE_ID_1"
+              },
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_FEMALE_2",
+                "language": "english",
+                "elevenlabs_id": "PLACEHOLDER_ELEVENLABS_VOICE_ID_2"
+              }
+            ]
+          },
+          "starfish": {
+            "vocal_identities": [
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_STAR_FEMALE_1",
+                "language": "english"
+              },
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_STAR_FEMALE_2",
+                "language": "english"
+              }
+            ]
+          }
+        }
+      },
+      "male": {
+        "replica_ids": [
+          "PLACEHOLDER_AVATAR_MALE_1",
+          "PLACEHOLDER_AVATAR_MALE_2"
+        ],
+        "voice_providers": {
+          "elevenlabs": {
+            "vocal_identities": [
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_MALE_1",
+                "language": "english",
+                "elevenlabs_id": "PLACEHOLDER_ELEVENLABS_VOICE_ID_3"
+              },
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_MALE_2",
+                "language": "english",
+                "elevenlabs_id": "PLACEHOLDER_ELEVENLABS_VOICE_ID_4"
+              }
+            ]
+          },
+          "starfish": {
+            "vocal_identities": [
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_STAR_MALE_1",
+                "language": "english"
+              },
+              {
+                "id": "PLACEHOLDER_HEYGEN_VOICE_UUID_STAR_MALE_2",
+                "language": "english"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "scenarios": [
+    "1",
+    "2",
+    "3",
+    "4",
+    "5"
+  ]
+}

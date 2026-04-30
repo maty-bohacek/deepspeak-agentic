@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ready to Start Conversation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            border-left: 4px solid #2F80ED;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+            border-radius: 0 10px 10px 0;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .instructions h3 {
+            color: #2F80ED;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .checklist {
+            margin: 30px 0;
+            text-align: left;
+            padding: 0 20px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: #555;
+            font-size: 16px;
+        }
+        
+        .checklist-item::before {
+            content: "\2713";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #e8f4fd;
+            color: #2F80ED;
+            border-radius: 50%;
+            margin-right: 15px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .ready-button {
+            background: linear-gradient(135deg, #2F80ED 0%, #1a5fc9 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 20px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(47, 128, 237, 0.3);
+        }
+        
+        .ready-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(47, 128, 237, 0.4);
+        }
+        
+        .ready-button:active {
+            transform: translateY(0);
+        }
+        
+        .ready-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2F80ED;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            display: none;
+            background: #fff5f5;
+            border: 1px solid #fc8181;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        .note {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">&#127909;</div>
+        <h1>Prepare for Your Conversation</h1>
+        
+        {% if human_instructions %}
+        <div class="instructions">
+            <h3>Instructions</h3>
+            {{ human_instructions | safe }}
+        </div>
+        {% endif %}
+        
+        <div class="checklist">
+            <div class="checklist-item">Camera and microphone are working</div>
+            <div class="checklist-item">You're in a quiet environment</div>
+            <div class="checklist-item">You have a stable internet connection</div>
+            <div class="checklist-item">You're ready to have a conversation</div>
+        </div>
+        
+        <button class="ready-button" id="readyBtn" onclick="startConversation()">
+            I AM READY TO PROCEED
+        </button>
+        
+        <div class="loading" id="loading">
+            <span class="spinner"></span>
+            Setting up your conversation...
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <p class="note">
+            Once you click the button, your conversation will start immediately.
+            <br>Please ensure you're ready before proceeding.
+        </p>
+    </div>
+    
+    <script>
+        async function startConversation() {
+            const btn = document.getElementById('readyBtn');
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            
+            btn.disabled = true;
+            btn.textContent = 'Setting up...';
+            loading.classList.add('show');
+            error.classList.remove('show');
+            
+            try {
+                const response = await fetch('/api/create-conversation/{{ combo_id }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    throw new Error(data.error || 'Failed to create conversation');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                error.textContent = 'Error: ' + err.message + '. Please try again or contact support.';
+                error.classList.add('show');
+                btn.disabled = false;
+                btn.textContent = 'I AM READY TO PROCEED';
+                loading.classList.remove('show');
+            }
+        }
+    </script>
+</body>
+</html>

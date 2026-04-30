@@ -1,0 +1,27 @@
+HEYGEN_API_KEY: ""
+TAVUS_API_KEY: ""
+OPENAI_API_KEY: ""
+ELEVENLABS_API_KEY: ""
+QUALTRICS_API_TOKEN: ""
+QUALTRICS_DATACENTER: "yul1"
+PROLIFIC_API_TOKEN: ""
+S3_BUCKET: ""
+S3_PREFIX: ""
+TAVUS_S3_BUCKET: ""
+TAVUS_S3_REGION: "us-east-1"
+TAVUS_AWS_ASSUME_ROLE_ARN: ""
+PUBLIC_DOMAIN: "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
+
+# Which provider this workspace uses: seeds output/1_combinations/agent_config.json from
+# assets/agent_config_heygen.json or assets/agent_config_tavus.json. Must match the
+# orchestration tree you run (`heygen/orchestration/` vs `tavus/orchestration/`).
+COLLECTION_PLATFORM: heygen
+
+# Qualtrics QSF: the block list (Element "BL") contains blocks; one block is the URL
+# template that gets duplicated per combo. Set this to that block's "ID" (e.g. BL_abc123)
+# from your exported .qsf JSON. See assets/EXAMPLE_qualtrics_template/README.md.
+QUALTRICS_TEMPLATE_BLOCK_ID: "PLACEHOLDER_QUALTRICS_TEMPLATE_BLOCK_ID"
+
+# Pipeline (replaces former RUN_CONFIG.txt)
+RANDOM_SEED: 24
+N_COMBOS: 6
