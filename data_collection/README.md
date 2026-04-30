@@ -8,7 +8,7 @@ Orchestration scripts, **HeyGen** and **Tavus** API wrappers, and **Flask** web 
 |------|------|
 | `assets/` | Templates: `agent_config_heygen.json`, `agent_config_tavus.json`, and `scenarios.json` (placeholders; safe to commit). Which agent file is copied into `output/1_combinations/agent_config.json` is controlled by **`COLLECTION_PLATFORM`** in `config.yaml`. |
 | `output/` | Generated artifacts for the released pipeline: combinations, survey templates, HTML, conversation logs (gitignored). |
-| `config.yaml` | API keys, bucket names, `PUBLIC_DOMAIN`, `COLLECTION_PLATFORM` (`heygen` or `tavus`), `QUALTRICS_TEMPLATE_BLOCK_ID`, pipeline knobs (`RANDOM_SEED`, `N_COMBOS`). See the file for full keys. |
+| `config.yaml` | Non-secret settings: `PUBLIC_DOMAIN`, `COLLECTION_PLATFORM`, `HEYGEN_S3_*`, `TAVUS_S3_*`, `QUALTRICS_TEMPLATE_BLOCK_ID`, `RANDOM_SEED`, `N_COMBOS`. **API keys are not stored here** — use environment variables (see **Credentials**). |
 | `heygen/orchestration/` | Numbered HeyGen pipeline scripts (`0_import_elevenlabs_voices.py`, `1_…`, `2_…`, `3_…`). |
 | `heygen/web_server/` | HeyGen Flask app (`app.py`) for on-demand LiveAvatar sessions. |
 | `heygen/heygen.py`, `heygen/index.html` | LiveAvatar API wrapper and **browser client** (served at `/heygen/index.html` by the HeyGen server). |
@@ -35,7 +35,7 @@ cd data_collection
 pip install -r requirements.txt
 ```
 
-Set project-wide settings in `data_collection/config.yaml` (keys vary by provider; at minimum set **`COLLECTION_PLATFORM`**, **`PUBLIC_DOMAIN`**, provider API keys, and for survey generation **`QUALTRICS_TEMPLATE_BLOCK_ID`**).
+Set non-secret values in `data_collection/config.yaml` (at minimum **`COLLECTION_PLATFORM`**, **`PUBLIC_DOMAIN`**, **`QUALTRICS_TEMPLATE_BLOCK_ID`**). Export **API keys** in your shell (see **Credentials**).
 
 Example snippet:
 
@@ -43,7 +43,10 @@ Example snippet:
 COLLECTION_PLATFORM: heygen   # or tavus — must match the orchestration tree you use
 PUBLIC_DOMAIN: "your-domain.example"
 QUALTRICS_TEMPLATE_BLOCK_ID: "BL_your_template_block_from_qsf"
-# Tavus recording / S3 (when using Tavus): see config.yaml for TAVUS_* keys
+HEYGEN_S3_BUCKET: "heygen-v3-data-storage"
+HEYGEN_S3_PREFIX: "heygen/"
+HEYGEN_S3_REGION: "us-east-1"
+# Tavus: TAVUS_S3_BUCKET, TAVUS_S3_REGION, TAVUS_AWS_ASSUME_ROLE_ARN in config.yaml
 ```
 
 `COLLECTION_PLATFORM` must be **`heygen`** when using `heygen/orchestration/*` and **`tavus`** when using `tavus/orchestration/*`; scripts exit if it does not match. Switching platforms re-seeds `output/1_combinations/agent_config.json` from the matching asset file (see `pipeline_paths.seed_working_from_assets`).
@@ -67,11 +70,17 @@ At the time this was documented, **HeyGen (LiveAvatar)** and **Tavus** each impo
 
 ## Credentials
 
-Put secrets in **`config.yaml`** or your environment; **do not commit** populated files.
+**API keys are read from the environment only** (not from `config.yaml`). Export them before running servers or scripts that call the APIs, for example:
 
-Typical values include provider API keys (**HeyGen**, **Tavus**, **ElevenLabs** where used), **AWS** credentials if you upload recordings to **S3**, and similar keys listed in **`config.yaml`**. This README does not enumerate every export—copy from `config.yaml` comments and wrapper code as needed.
+```bash
+export HEYGEN_API_KEY=...       # HeyGen LiveAvatar + web server + orchestration step 3
+export TAVUS_API_KEY=...        # Tavus API wrapper
+export ELEVENLABS_API_KEY=...    # heygen/orchestration/0_import_elevenlabs_voices.py
+```
 
-Wrappers and orchestration scripts read **`data_collection/config.yaml`**.
+**AWS** credentials for S3 uploads use the usual environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, etc.) or your runtime’s IAM role.
+
+Non-secret paths and flags stay in **`data_collection/config.yaml`**; scripts load that file for `PUBLIC_DOMAIN`, S3 bucket **names** (`HEYGEN_S3_*`, `TAVUS_S3_*`), and pipeline settings.
 
 ## Web servers
 

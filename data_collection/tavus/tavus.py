@@ -1,17 +1,10 @@
 import requests
 import json
 import os
-import yaml
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 
-_config_path = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
-if os.path.isfile(_config_path):
-    with open(_config_path, "r", encoding="utf-8") as _f:
-        _cfg = yaml.safe_load(_f) or {}
-    API_KEY = (_cfg.get("TAVUS_API_KEY") or "").strip()
-else:
-    API_KEY = os.environ.get("TAVUS_API_KEY", "").strip()
+API_KEY = os.environ.get("TAVUS_API_KEY", "").strip()
 
 DEFAULT_PERSONA_ID = os.environ.get("TAVUS_DEFAULT_PERSONA_ID", "").strip()
 

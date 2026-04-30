@@ -26,15 +26,15 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.yaml")
 with open(CONFIG_PATH, "r") as _f:
-    _cfg = yaml.safe_load(_f)
-HEYGEN_API_KEY = _cfg["HEYGEN_API_KEY"]
-PUBLIC_CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.yaml")
-with open(PUBLIC_CONFIG_PATH, "r") as _f:
-    _public_cfg = yaml.safe_load(_f) or {}
-PUBLIC_DOMAIN = (_public_cfg.get("PUBLIC_DOMAIN", "INSERT_YOUR_PUBLIC_DOMAIN_HERE") or "").strip() or "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
+    _cfg = yaml.safe_load(_f) or {}
+HEYGEN_API_KEY = os.environ.get("HEYGEN_API_KEY", "").strip()
+if not HEYGEN_API_KEY:
+    print("ERROR: export HEYGEN_API_KEY before starting the HeyGen web server.", file=sys.stderr)
+    sys.exit(1)
+PUBLIC_DOMAIN = (_cfg.get("PUBLIC_DOMAIN", "INSERT_YOUR_PUBLIC_DOMAIN_HERE") or "").strip() or "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
 
-S3_BUCKET_NAME = _cfg.get("S3_BUCKET", "heygen-v3-data-storage")
-S3_PREFIX = _cfg.get("S3_PREFIX", "heygen/")
+S3_BUCKET_NAME = _cfg.get("HEYGEN_S3_BUCKET", "heygen-v3-data-storage")
+S3_PREFIX = _cfg.get("HEYGEN_S3_PREFIX", "heygen/")
 
 RECORDINGS_DIR = os.path.join(os.path.dirname(__file__), "recordings")
 BACKUP_DIR = os.path.join(RECORDINGS_DIR, "backup")

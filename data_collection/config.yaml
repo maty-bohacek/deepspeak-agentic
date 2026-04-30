@@ -1,16 +1,17 @@
-HEYGEN_API_KEY: ""
-TAVUS_API_KEY: ""
-OPENAI_API_KEY: ""
-ELEVENLABS_API_KEY: ""
-QUALTRICS_API_TOKEN: ""
-QUALTRICS_DATACENTER: "yul1"
-PROLIFIC_API_TOKEN: ""
-S3_BUCKET: ""
-S3_PREFIX: ""
+# Non-secret settings. API keys are read from the environment only — export before running:
+#   HEYGEN_API_KEY, TAVUS_API_KEY, ELEVENLABS_API_KEY (see data_collection/README.md).
+
+PUBLIC_DOMAIN: "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
+
+# HeyGen recording uploads (S3). Region used in public object URL hints in orchestration output.
+HEYGEN_S3_BUCKET: "heygen-v3-data-storage"
+HEYGEN_S3_PREFIX: "heygen/"
+HEYGEN_S3_REGION: "us-east-1"
+
+# Tavus recording (S3) — used by Tavus web server / API paths
 TAVUS_S3_BUCKET: ""
 TAVUS_S3_REGION: "us-east-1"
 TAVUS_AWS_ASSUME_ROLE_ARN: ""
-PUBLIC_DOMAIN: "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
 
 # Which provider this workspace uses: seeds output/1_combinations/agent_config.json from
 # assets/agent_config_heygen.json or assets/agent_config_tavus.json. Must match the
@@ -22,6 +23,6 @@ COLLECTION_PLATFORM: heygen
 # from your exported .qsf JSON. See assets/EXAMPLE_qualtrics_template/README.md.
 QUALTRICS_TEMPLATE_BLOCK_ID: "PLACEHOLDER_QUALTRICS_TEMPLATE_BLOCK_ID"
 
-# Pipeline (replaces former RUN_CONFIG.txt)
+# Pipeline
 RANDOM_SEED: 24
 N_COMBOS: 6

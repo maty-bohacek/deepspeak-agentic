@@ -5,18 +5,11 @@ import json
 import os
 import sys
 import argparse
-import yaml
 from typing import Optional, Dict, Any
 from datetime import datetime
 from urllib.parse import urlencode
 
-_config_path = os.path.join(os.path.dirname(__file__), "..", "config.yaml")
-if os.path.exists(_config_path):
-    with open(_config_path, "r") as _f:
-        _cfg = yaml.safe_load(_f)
-    API_KEY = _cfg.get("HEYGEN_API_KEY", "")
-else:
-    API_KEY = os.environ.get("HEYGEN_API_KEY", "")
+API_KEY = os.environ.get("HEYGEN_API_KEY", "").strip()
 DEFAULT_AVATAR_ID = "9a4f4b1f-86f9-4acf-9a37-b81c21ae95e4"
 DEFAULT_VOICE_ID = "254ffe1e-c89f-430f-8c36-9e7611d310c0"
 DEFAULT_CONTEXT_ID = "c401b5b4-14df-4e57-b040-30ef43af24b8"

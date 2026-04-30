@@ -23,7 +23,7 @@ if PROJECT_ROOT not in sys.path:
 CONFIG_PATH = os.path.join(PROJECT_ROOT, "config.yaml")
 with open(CONFIG_PATH, "r") as _f:
     _cfg = yaml.safe_load(_f) or {}
-HEYGEN_API_KEY = _cfg["HEYGEN_API_KEY"]
+HEYGEN_API_KEY = os.environ.get("HEYGEN_API_KEY", "").strip()
 _public_cfg = _cfg
 _QUALTRICS_BLOCK_PLACEHOLDER = "PLACEHOLDER_QUALTRICS_TEMPLATE_BLOCK_ID"
 QUALTRICS_TEMPLATE_BLOCK_ID = str(_cfg.get("QUALTRICS_TEMPLATE_BLOCK_ID") or "").strip()
@@ -54,10 +54,11 @@ METADATA_DIR = os.path.join(OUTPUTS_DIR, "output_metadata")
 WEB_DOMAIN = (_public_cfg.get("PUBLIC_DOMAIN", "INSERT_YOUR_PUBLIC_DOMAIN_HERE") or "").strip() or "INSERT_YOUR_PUBLIC_DOMAIN_HERE"
 WEB_PROTOCOL = "https"
 
-# S3 bucket for recordings (from config.yaml)
-_s3_bucket = _cfg.get("S3_BUCKET", "heygen-v3-data-storage")
-_s3_prefix = _cfg.get("S3_PREFIX", "heygen/").rstrip("/")
-S3_BUCKET_URL = f"https://{_s3_bucket}.s3.us-east-1.amazonaws.com/{_s3_prefix}"
+# HeyGen S3 recording target (from config.yaml)
+_s3_bucket = str(_cfg.get("HEYGEN_S3_BUCKET") or "heygen-v3-data-storage").strip()
+_s3_region = str(_cfg.get("HEYGEN_S3_REGION") or "us-east-1").strip()
+_s3_prefix = str(_cfg.get("HEYGEN_S3_PREFIX") or "heygen/").rstrip("/")
+S3_BUCKET_URL = f"https://{_s3_bucket}.s3.{_s3_region}.amazonaws.com/{_s3_prefix}"
 
 
 def read_json(path: str) -> Dict[str, Any]:
@@ -355,6 +356,10 @@ def main():
         sys.exit(1)
 
     assert_collection_platform("heygen")
+
+    if not HEYGEN_API_KEY:
+        print("ERROR: export HEYGEN_API_KEY in your environment before running this script.")
+        sys.exit(1)
 
     # Ensure all necessary directories exist
     print("Creating output directories...")

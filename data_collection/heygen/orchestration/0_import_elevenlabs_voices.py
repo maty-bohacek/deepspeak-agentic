@@ -33,10 +33,15 @@ AGENT_CONFIG_PATH = agent_config_working_path()
 BASE_URL = "https://api.liveavatar.com/v1"
 
 with open(CONFIG_PATH, "r") as f:
-    cfg = yaml.safe_load(f)
+    cfg = yaml.safe_load(f) or {}
 
-HEYGEN_API_KEY = cfg["HEYGEN_API_KEY"]
-ELEVENLABS_API_KEY = cfg["ELEVENLABS_API_KEY"]
+HEYGEN_API_KEY = os.environ.get("HEYGEN_API_KEY", "").strip()
+ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY", "").strip()
+if not HEYGEN_API_KEY or not ELEVENLABS_API_KEY:
+    print(
+        "ERROR: export HEYGEN_API_KEY and ELEVENLABS_API_KEY in your environment before running this script."
+    )
+    sys.exit(1)
 
 HEADERS = {
     "X-API-KEY": HEYGEN_API_KEY,
