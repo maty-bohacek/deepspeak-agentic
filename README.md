@@ -38,15 +38,12 @@ python make_detection_table.py > detection_table.tex
 
 ### Data Collection
 
-*Setup and run instructions coming soon.*
-
 ```bash
 cd data_collection
-# TODO: install instructions
-# TODO: how to configure the agent providers (Tavus, HeyGen, ElevenLabs, Cartesia)
-# TODO: how to launch the video-streaming server
-# TODO: how to issue per-participant session URLs
+pip install -r requirements.txt
 ```
+
+Orchestration, Tavus/HeyGen wrappers, and Flask recording servers live under `data_collection/` (per-provider trees: `data_collection/heygen/`, `data_collection/tavus/`); see [`data_collection/README.md`](./data_collection/README.md) for layout, environment variables, and how to run the web servers.
 
 ## Citation
 

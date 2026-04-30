@@ -1,6 +1,6 @@
 # Data Collection
 
-Study capture stack: **orchestration** scripts (Qualtrics / Prolific / S3 helpers), **HeyGen** and **Tavus** API wrappers, and **Flask** web servers that issue session URLs and handle recording uploads.
+Orchestration scripts, **HeyGen** and **Tavus** API wrappers, and **Flask** web servers that issue session URLs (with optional **S3** recording uploads). Participant-facing surveys use **Qualtrics**; this repo does **not** design the survey UI for you—it fills exported survey templates with conversation URLs.
 
 ## Layout
 
@@ -8,14 +8,14 @@ Study capture stack: **orchestration** scripts (Qualtrics / Prolific / S3 helper
 |------|------|
 | `assets/` | Templates: `agent_config_heygen.json`, `agent_config_tavus.json`, and `scenarios.json` (placeholders; safe to commit). Which agent file is copied into `output/1_combinations/agent_config.json` is controlled by **`COLLECTION_PLATFORM`** in `config.yaml`. |
 | `output/` | Generated artifacts for the released pipeline: combinations, survey templates, HTML, conversation logs (gitignored). |
-| `config.yaml` | API keys, bucket names, `PUBLIC_DOMAIN`, `COLLECTION_PLATFORM` (`heygen` or `tavus`), `QUALTRICS_TEMPLATE_BLOCK_ID`, pipeline knobs (`RANDOM_SEED`, `N_COMBOS`). |
+| `config.yaml` | API keys, bucket names, `PUBLIC_DOMAIN`, `COLLECTION_PLATFORM` (`heygen` or `tavus`), `QUALTRICS_TEMPLATE_BLOCK_ID`, pipeline knobs (`RANDOM_SEED`, `N_COMBOS`). See the file for full keys. |
 | `heygen/orchestration/` | Numbered HeyGen pipeline scripts (`0_import_elevenlabs_voices.py`, `1_…`, `2_…`, `3_…`). |
 | `heygen/web_server/` | HeyGen Flask app (`app.py`) for on-demand LiveAvatar sessions. |
 | `heygen/heygen.py`, `heygen/index.html` | LiveAvatar API wrapper and **browser client** (served at `/heygen/index.html` by the HeyGen server). |
 | `tavus/orchestration/` | Numbered Tavus pipeline scripts (`1_…`, `2_…`, `3_…`). |
 | `tavus/web_server/` | Tavus Flask app (`app.py`, `run.sh`). |
 | `tavus/tavus.py` | Tavus CVI API wrapper. |
-| `assets/EXAMPLE_qualtrics_template/` | **No `.qsf` in repo** — read `README.md` for required survey structure and placeholders. |
+| `assets/EXAMPLE_qualtrics_template/` | Documents required **placeholder text** and structure inside your Qualtrics survey export (`.qsf`). **No survey file is shipped** in this repo. |
 | `EXAMPLE_output_layout/` | Documents the directory tree under `output/`. |
 
 Run orchestration from `data_collection/` (so imports resolve), for example:
@@ -35,19 +35,31 @@ cd data_collection
 pip install -r requirements.txt
 ```
 
-Set project-wide settings once in `data_collection/config.yaml`:
+Set project-wide settings in `data_collection/config.yaml` (keys vary by provider; at minimum set **`COLLECTION_PLATFORM`**, **`PUBLIC_DOMAIN`**, provider API keys, and for survey generation **`QUALTRICS_TEMPLATE_BLOCK_ID`**).
+
+Example snippet:
 
 ```yaml
 COLLECTION_PLATFORM: heygen   # or tavus — must match the orchestration tree you use
 PUBLIC_DOMAIN: "your-domain.example"
 QUALTRICS_TEMPLATE_BLOCK_ID: "BL_your_template_block_from_qsf"
-TAVUS_S3_BUCKET: "your-tavus-bucket"
-TAVUS_AWS_ASSUME_ROLE_ARN: "arn:aws:iam::<acct-id>:role/<role-name>"
+# Tavus recording / S3 (when using Tavus): see config.yaml for TAVUS_* keys
 ```
 
 `COLLECTION_PLATFORM` must be **`heygen`** when using `heygen/orchestration/*` and **`tavus`** when using `tavus/orchestration/*`; scripts exit if it does not match. Switching platforms re-seeds `output/1_combinations/agent_config.json` from the matching asset file (see `pipeline_paths.seed_working_from_assets`).
 
-`QUALTRICS_TEMPLATE_BLOCK_ID` must match the `"ID"` of the URL template block inside your exported `.qsf` (see `assets/EXAMPLE_qualtrics_template/README.md`). The shipped default is a placeholder and must be replaced before running step 3.
+## Qualtrics: design separately, export, populate here, re-upload
+
+This codebase **does not** create or host Qualtrics surveys via API. You maintain the survey in Qualtrics yourself.
+
+1. **Design** a survey in Qualtrics that includes a **template block** with the literal placeholders this tooling replaces (`URL: url_1` and `url_1` in question text). Structure requirements are in **`assets/EXAMPLE_qualtrics_template/README.md`**.
+2. **Export** that survey as a **`.qsf`** file from Qualtrics.
+3. **Copy** the `.qsf` into **`output/1.5_survey_templates/inputs/`** (create folders if needed). Step **3** (`heygen/orchestration/3_generate_survey_urls.py` or `tavus/orchestration/3_generate_survey_urls.py`) picks the newest `.qsf` there.
+4. Set **`QUALTRICS_TEMPLATE_BLOCK_ID`** in **`config.yaml`** to the **`"ID"`** of that template block inside the exported JSON (not the shipped placeholder).
+5. Run the pipeline through combinations → selection → step **3**. The script writes a **populated** `.qsf` under **`output/1.5_survey_templates/outputs/`** with real `/start/<combo_id>` URLs for your **`PUBLIC_DOMAIN`**.
+6. **Re-import** that output `.qsf` into Qualtrics so the live study matches the generated links. Until you import, participants still see the old survey.
+
+Crowdsourcing platforms (e.g. routing workers into Qualtrics) are **outside** this repo—you configure those tools to send participants to your Qualtrics URL once the imported survey is active.
 
 ### Provider concurrency and how many URLs to generate
 
@@ -55,27 +67,18 @@ At the time this was documented, **HeyGen (LiveAvatar)** and **Tavus** each impo
 
 ## Credentials
 
-Export secrets (or inject via your process manager); do not commit populated files.
+Put secrets in **`config.yaml`** or your environment; **do not commit** populated files.
 
-```bash
-export AWS_ACCESS_KEY_ID=...
-export AWS_SECRET_ACCESS_KEY=...
-export AWS_DEFAULT_REGION=...
-export HEYGEN_API_KEY=...
-export ELEVENLABS_API_KEY=...
-export TAVUS_API_KEY=...
-export QUALTRICS_API_TOKEN=...
-export PROLIFIC_API_TOKEN=...
-```
+Typical values include provider API keys (**HeyGen**, **Tavus**, **ElevenLabs** where used), **AWS** credentials if you upload recordings to **S3**, and similar keys listed in **`config.yaml`**. This README does not enumerate every export—copy from `config.yaml` comments and wrapper code as needed.
 
-Wrappers and orchestration scripts read `data_collection/config.yaml`.
+Wrappers and orchestration scripts read **`data_collection/config.yaml`**.
 
 ## Web servers
 
 - **HeyGen** (port 3000 by default): from `data_collection/`, run `python heygen/web_server/app.py` — reads `output/combo_lookup.json`, `output/0_scenarios/scenarios.json`, and related paths (same root as orchestration).
 - **Tavus** (port 5000): from `data_collection/`, run `python tavus/web_server/app.py`, or `bash tavus/web_server/run.sh` (optional `venv` under `data_collection/`).
 
-Production: use `gunicorn` (included in `requirements.txt`); see comments in `tavus/web_server/run.sh`.
+Production: use `gunicorn` (included in `requirements.txt`); see comments in `tavus/web_server/run.sh`. Terminate TLS and map your **`PUBLIC_DOMAIN`** to this service at your infrastructure layer.
 
 ### HeyGen: reloading the combo list after step 3
 
