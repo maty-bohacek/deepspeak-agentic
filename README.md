@@ -7,9 +7,9 @@
 
 This repository accompanies the paper *The DeepSpeak-Agentic Dataset* and contains (1) the code used to capture real-time, audio-visual conversations between human crowd workers and embodied AI agents, and (2) the code used to compute the dataset statistics, run the deepfake detection benchmarks, and reproduce all figures and tables in the paper. The dataset we release contains 200 conversations totalling 37 hours, with isolated per-speaker streams, transcripts, and metadata.
 
-> [Paper]() — [Data](https://huggingface.co/datasets/faridlab/deepspeak_agentic) — [Contact us](mailto:maty@stanford.edu)
+> [Paper](https://arxiv.org/abs/2606.03686) — [Data](https://huggingface.co/datasets/faridlab/deepspeak_agentic) — [Contact us](mailto:maty@stanford.edu)
 >
-> *Pre-print. Under review.*
+> *Published at the WACV 2026 SIGNAL Workshop.*
 
 ## Repository Layout
 
@@ -50,10 +50,10 @@ Orchestration, Tavus/HeyGen wrappers, and Flask recording servers live under `da
 If you find our work useful, please consider citing our paper.
 
 ```bibtex
-@inproceedings{tbd2026deepspeakagentic,
+@article{barrington2026deepspeak,
   title={The DeepSpeak-Agentic Dataset},
-  author={TBD},
-  booktitle={TBD},
-  year={TBD}
+  author={Barrington, Sarah and Bohacek, Maty and Farid, Hany},
+  journal={arXiv preprint arXiv:2606.03686},
+  year={2026}
 }
 ```
